@@ -23,6 +23,7 @@
                     id="animated-asset"
                     src="assets/asset.glb"
                 ></a-asset-item>
+                <audio id="broken" src="assets/asset.mp3" preload="auto"></audio>
             </a-assets>
 
             <a-marker
@@ -47,5 +48,27 @@
 
             <a-entity camera></a-entity>
         </a-scene>
+
+        <script>
+            // マーカー検出イベントを監視し、音声再生を管理
+            const marker = document.querySelector("#animated-marker");
+            const sound = document.querySelector("#broken");
+            let playedOnce = false; // 音声が再生されたかどうかを追跡
+
+            marker.addEventListener("markerFound", () => {
+                // 音声がまだ再生されていない場合のみ再生
+                if (!playedOnce && sound.paused) {
+                    sound.play().catch((error) => {
+                        console.log("オートプレイエラー:", error);
+                    });
+                    playedOnce = true; // 再生されたことを記録
+                }
+            });
+
+            marker.addEventListener("markerLost", () => {
+                sound.pause(); // マーカーが見えなくなったら音声停止
+                sound.currentTime = 0; // 音声の再生位置をリセット
+            });
+        </script>
     </body>
 </html>
